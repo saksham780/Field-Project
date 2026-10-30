@@ -159,7 +159,49 @@ div.stFormSubmitButton > button p { color: #ffffff !important; }
 /* Tables and notices */
 [data-testid="stDataFrame"] { background: #ffffff; }
 [data-testid="stAlert"] { border-radius: 12px; }
-[data-testid="stAlert"] p { color: inherit !important; }
+[data-testid="stAlert"] p { color: #17343b !important; }
+
+/* High-contrast prediction output cards */
+.prediction-card {
+    padding: 22px 24px;
+    border-radius: 16px;
+    margin: 12px 0 18px 0;
+    border: 2px solid;
+    box-shadow: 0 5px 18px rgba(20, 55, 60, 0.10);
+}
+.prediction-card.positive {
+    background: #fff0ef !important;
+    border-color: #c93636 !important;
+}
+.prediction-card.negative {
+    background: #eaf8ef !important;
+    border-color: #23834b !important;
+}
+.prediction-label {
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    margin-bottom: 7px;
+}
+.prediction-card.positive .prediction-label,
+.prediction-card.positive h2,
+.prediction-card.positive p { color: #8f1f1f !important; }
+.prediction-card.negative .prediction-label,
+.prediction-card.negative h2,
+.prediction-card.negative p { color: #145b32 !important; }
+.prediction-card h2 {
+    font-size: 1.55rem;
+    margin: 0 0 8px 0;
+    font-weight: 800;
+}
+.prediction-card p {
+    margin: 0;
+    line-height: 1.55;
+    font-weight: 500;
+}
+[data-testid="stDataFrame"] * {
+    color: #18343b !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -342,11 +384,25 @@ elif page == "Risk Assessment":
         st.markdown("---")
         st.subheader("Model output")
         if result.lower() == "positive":
-            st.error("The model classified the submitted answers as POSITIVE.")
-            st.write("This output is a pattern-based prediction from the dataset, not confirmation of diabetes.")
+            st.markdown(
+                '<div class="prediction-card positive">'
+                '<div class="prediction-label">MODEL PREDICTION</div>'
+                '<h2>Positive result</h2>'
+                '<p>The Random Forest model classified the submitted answers as POSITIVE. '
+                'This is a pattern-based prediction from the dataset, not a diagnosis or confirmation of diabetes.</p>'
+                '</div>',
+                unsafe_allow_html=True
+            )
         else:
-            st.success("The model classified the submitted answers as NEGATIVE.")
-            st.write("A negative output does not rule out diabetes or other health concerns.")
+            st.markdown(
+                '<div class="prediction-card negative">'
+                '<div class="prediction-label">MODEL PREDICTION</div>'
+                '<h2>Negative result</h2>'
+                '<p>The Random Forest model classified the submitted answers as NEGATIVE. '
+                'A negative output does not rule out diabetes or other health concerns.</p>'
+                '</div>',
+                unsafe_allow_html=True
+            )
         with st.expander("View submitted features"):
             st.dataframe(sample, use_container_width=True, hide_index=True)
 

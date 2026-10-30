@@ -55,11 +55,29 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 }
 [data-testid="stHeader"] { background: rgba(247,250,255,.96); }
 [data-testid="stAppViewContainer"] .main { color: #243746 !important; }
+/* Keep normal page text readable */
 [data-testid="stAppViewContainer"] .main p,
 [data-testid="stAppViewContainer"] .main li,
+[data-testid="stAppViewContainer"] .main [data-testid="stMarkdownContainer"],
+[data-testid="stAppViewContainer"] .main [data-testid="stWidgetLabel"],
+[data-testid="stAppViewContainer"] .main [data-testid="stWidgetLabel"] *,
 [data-testid="stAppViewContainer"] .main label,
-[data-testid="stAppViewContainer"] .main [data-testid="stMarkdownContainer"] {
-    color: #243746;
+[data-testid="stAppViewContainer"] .main label * {
+    color: #243746 !important;
+    -webkit-text-fill-color: #243746 !important;
+    opacity: 1 !important;
+}
+
+/* Streamlit form labels: headings and field names must not fade into the page */
+.stApp [data-testid="stWidgetLabel"],
+.stApp [data-testid="stWidgetLabel"] p,
+.stApp [data-testid="stWidgetLabel"] span,
+.stApp .stSelectbox label,
+.stApp .stNumberInput label {
+    color: #243746 !important;
+    -webkit-text-fill-color: #243746 !important;
+    opacity: 1 !important;
+    font-weight: 600 !important;
 }
 
 /* Sidebar: explicitly override the page text styles */
@@ -100,6 +118,15 @@ section[data-testid="stSidebar"] input { color: #243746 !important; }
 .metric-label { color: #62777c !important; font-size: .85rem; font-weight: 600; }
 .metric-value { color: #103f46 !important; font-size: 1.45rem; font-weight: 800; margin-top: 5px; }
 h1, h2, h3 { font-family: Manrope, sans-serif; color: #143d45 !important; }
+.stApp [data-testid="stForm"] h1,
+.stApp [data-testid="stForm"] h2,
+.stApp [data-testid="stForm"] h3,
+.stApp [data-testid="stForm"] p,
+.stApp [data-testid="stForm"] label {
+    color: #243746 !important;
+    -webkit-text-fill-color: #243746 !important;
+    opacity: 1 !important;
+}
 
 /* Fix Streamlit form controls: pale backgrounds + dark text */
 [data-testid="stNumberInput"] input,
@@ -118,20 +145,31 @@ h1, h2, h3 { font-family: Manrope, sans-serif; color: #143d45 !important; }
     border-color: #c7d9dc !important;
 }
 
-/* BaseWeb select boxes (Gender and Yes/No symptom fields) */
-div[data-baseweb="select"] > div {
+/* High-contrast select boxes (Gender and Yes/No symptom fields) */
+.stApp div[data-baseweb="select"] > div,
+.stApp [data-testid="stSelectbox"] [role="combobox"] {
     background-color: #ffffff !important;
-    border: 1px solid #c7d9dc !important;
+    border: 1px solid #9bb8bd !important;
     color: #243746 !important;
     border-radius: 9px !important;
     box-shadow: none !important;
+    opacity: 1 !important;
 }
-div[data-baseweb="select"] span,
-div[data-baseweb="select"] input,
-div[data-baseweb="select"] div,
-div[data-baseweb="select"] svg {
+.stApp div[data-baseweb="select"] span,
+.stApp div[data-baseweb="select"] input,
+.stApp div[data-baseweb="select"] div,
+.stApp div[data-baseweb="select"] svg,
+.stApp [data-testid="stSelectbox"] [role="combobox"] * {
     color: #243746 !important;
     fill: #526b73 !important;
+    -webkit-text-fill-color: #243746 !important;
+    opacity: 1 !important;
+}
+
+/* Make the selected option readable even when Streamlit applies theme styles */
+.stApp [data-testid="stSelectbox"] [data-testid="stMarkdownContainer"],
+.stApp [data-testid="stSelectbox"] [data-testid="stMarkdownContainer"] * {
+    color: #243746 !important;
     -webkit-text-fill-color: #243746 !important;
 }
 ul[data-testid="stSelectboxVirtualDropdown"],
@@ -159,49 +197,7 @@ div.stFormSubmitButton > button p { color: #ffffff !important; }
 /* Tables and notices */
 [data-testid="stDataFrame"] { background: #ffffff; }
 [data-testid="stAlert"] { border-radius: 12px; }
-[data-testid="stAlert"] p { color: #17343b !important; }
-
-/* High-contrast prediction output cards */
-.prediction-card {
-    padding: 22px 24px;
-    border-radius: 16px;
-    margin: 12px 0 18px 0;
-    border: 2px solid;
-    box-shadow: 0 5px 18px rgba(20, 55, 60, 0.10);
-}
-.prediction-card.positive {
-    background: #fff0ef !important;
-    border-color: #c93636 !important;
-}
-.prediction-card.negative {
-    background: #eaf8ef !important;
-    border-color: #23834b !important;
-}
-.prediction-label {
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    margin-bottom: 7px;
-}
-.prediction-card.positive .prediction-label,
-.prediction-card.positive h2,
-.prediction-card.positive p { color: #8f1f1f !important; }
-.prediction-card.negative .prediction-label,
-.prediction-card.negative h2,
-.prediction-card.negative p { color: #145b32 !important; }
-.prediction-card h2 {
-    font-size: 1.55rem;
-    margin: 0 0 8px 0;
-    font-weight: 800;
-}
-.prediction-card p {
-    margin: 0;
-    line-height: 1.55;
-    font-weight: 500;
-}
-[data-testid="stDataFrame"] * {
-    color: #18343b !important;
-}
+[data-testid="stAlert"] p { color: inherit !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -384,25 +380,11 @@ elif page == "Risk Assessment":
         st.markdown("---")
         st.subheader("Model output")
         if result.lower() == "positive":
-            st.markdown(
-                '<div class="prediction-card positive">'
-                '<div class="prediction-label">MODEL PREDICTION</div>'
-                '<h2>Positive result</h2>'
-                '<p>The Random Forest model classified the submitted answers as POSITIVE. '
-                'This is a pattern-based prediction from the dataset, not a diagnosis or confirmation of diabetes.</p>'
-                '</div>',
-                unsafe_allow_html=True
-            )
+            st.error("The model classified the submitted answers as POSITIVE.")
+            st.write("This output is a pattern-based prediction from the dataset, not confirmation of diabetes.")
         else:
-            st.markdown(
-                '<div class="prediction-card negative">'
-                '<div class="prediction-label">MODEL PREDICTION</div>'
-                '<h2>Negative result</h2>'
-                '<p>The Random Forest model classified the submitted answers as NEGATIVE. '
-                'A negative output does not rule out diabetes or other health concerns.</p>'
-                '</div>',
-                unsafe_allow_html=True
-            )
+            st.success("The model classified the submitted answers as NEGATIVE.")
+            st.write("A negative output does not rule out diabetes or other health concerns.")
         with st.expander("View submitted features"):
             st.dataframe(sample, use_container_width=True, hide_index=True)
 

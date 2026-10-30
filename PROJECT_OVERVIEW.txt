@@ -1,0 +1,22 @@
+DiaPredict — Single-Model Diabetes Prediction
+
+Goal:
+Demonstrate a diabetes classification workflow using one Random Forest model.
+
+Algorithm:
+Random Forest Classifier (300 trees). The model is trained on the UCI Early
+Stage Diabetes Risk Prediction dataset after preprocessing numeric and
+categorical features.
+
+Pages:
+1. Overview — dataset information, class distribution and test accuracy.
+2. Risk Assessment — input age, gender and symptom answers for a prediction.
+3. Model Performance — test accuracy, precision, recall, F1-score and confusion matrix.
+4. About Project — objective, algorithm, dataset, technologies and limitations.
+
+Technology:
+Python, Streamlit, Pandas, Scikit-learn and Plotly.
+
+Important:
+No model can be guaranteed to produce the best predictions for every dataset.
+This project is an educational demonstration and is not a medical diagnosis.
